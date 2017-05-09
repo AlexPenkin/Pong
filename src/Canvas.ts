@@ -3,7 +3,7 @@ export default class Canvas {
     canvasSelector: string;
     canvasSize: Interface.Size;
     private canvas: any;
-    private context: any;   
+    private context: any;
     constructor(settings: Interface.CanvasSettings) {
         this.canvasSelector= settings.selector;
         this.canvasSize = settings.size;
@@ -32,7 +32,7 @@ export default class Canvas {
         this.context = this.canvas.getContext('2d');
         this.setSize(settings.size);
     }
-    
+
     getContext() {
         return this.context;
     }
