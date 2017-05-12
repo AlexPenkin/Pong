@@ -1,8 +1,8 @@
-const {
-    CheckerPlugin
-} = require('awesome-typescript-loader')
+const { CheckerPlugin } = require('awesome-typescript-loader');
+
 module.exports = {
     entry: './src/main.ts',
+    devtool: 'source-map',
     output: {
         filename: 'main.js',
         path: __dirname + '/dist/',
