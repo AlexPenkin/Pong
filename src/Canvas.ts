@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs/Observable';
 import * as Interface from './interfaces';
 export default class Canvas {
     canvasSelector: string;
