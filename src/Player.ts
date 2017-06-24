@@ -28,7 +28,6 @@ export default class Player {
         this.context.fillRect(this.position.x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
         let $key = Observable.fromEvent(document, 'keydown');
         $key.throttleTime(10).subscribe((e: KeyboardEvent) => {
-              e.preventDefault();
             that.timeStamp = performance.now();
             switch(e.which || e.keyCode) {
                 case 37: // left
