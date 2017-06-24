@@ -1,7 +1,8 @@
-import  { Rx }  from 'rxjs';
 import * as Interface from './interfaces';
 import Canvas from './Canvas';
 import Player from './Player';
+import Ball from './Ball';
+
 export default class Game {
     private canvas: Canvas;
     private players: Player[] = [];
@@ -15,16 +16,13 @@ export default class Game {
             selector: 'root'
         });
         if( this.players.length < 2 && this.players.length === 0) {
-            this.players.push(new Player(this, 'real'));
+            this.players.push(new Player(this, true));
         }
+        new Ball(this);
         this.bindEvents();
     }
 
     private bindEvents () {
-        var $leftArrow = Rx.Observable.fromEvent(document,'mousemove');
-        $leftArrow.subscribe((event: any) => {
-            console.log(event);
-        })
     }
 
     getPlayers() {

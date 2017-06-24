@@ -12,6 +12,13 @@
     "rules": {
         "indent": ["warn", 4],
         "linebreak-style": "off",
-        "no-mixed-operators": ["error", {"allowSamePrecedence": true}]
+        "no-mixed-operators": ["error", {"allowSamePrecedence": true}],
+        "no-trailing-spaces": "error",
+        "no-duplicate-imports":"error",
+        "no-useless-constructor": "error",
+        "no-duplicate-case": "error",
+        "no-unreachable":"error",
+        "no-empty-function": "error",
+        "no-shadow":"warn"
     }
 }

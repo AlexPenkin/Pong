@@ -7,3 +7,8 @@ export interface CanvasSettings {
     selector: string,
     size?: Size,
 }
+
+export interface Position {
+    x: number,
+    y: number
+}
