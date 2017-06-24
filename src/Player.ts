@@ -6,8 +6,8 @@ export default class Player {
     existingPlayers: Player[];
     private context: any;
     private timeStamp: number;
-    private RECWIDTH: number = 100;
-    private RECHEIGHT: number = 20;
+    public RECWIDTH: number = 100;
+    public RECHEIGHT: number = 20;
     public position: Interface.Position = {
         x: 0,
         y: 0

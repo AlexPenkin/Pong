@@ -12,21 +12,26 @@ export default class Ball {
     private ballColor = 'black';
     private game: Game;
     private speed: number = 5;
+    public isMoving: boolean = false;
 
     constructor (game: Game) {
         this.game = game;
         this.context = game.getContext();
         this.move = this.move.bind(this);
-        this.position = {
+        this.position = this.getInitialPosition();
+        this.init()
+    }
+
+    init() {
+        this.draw(this.position);
+        setTimeout(() => {this.move(0)}, 0);
+    }
+
+    getInitialPosition() {
+        return {
             x: window.innerWidth / 2,
             y: window.innerHeight / 2
         }
-        this.init()
-        setTimeout(() => {this.init()}, 3000);
-    }
-    init() {
-        this.draw(this.position);
-        setTimeout(() => {this.move(0)}, 1000);
     }
 
     draw(position : Interface.Position) {
@@ -47,16 +52,43 @@ export default class Ball {
         this.context.restore();
     }
 
-    render(out?: boolean) {
+    render(out?: boolean, position?: Interface.Position) {
         if (out) this.speed = -this.speed;
         this.clear();
-        this.position.y += this.speed;
+        if (position) {
+            this.position = position;
+        } else {
+            this.position.y += this.speed;
+        }
         // this.position.x += 2;
         this.draw(this.position);
     }
 
     move (e: number) {
-        if (this.game.getPlayers()[0].position.y > this.position.y + this.radius + this.speed && 100 < this.position.y + this.radius + this.speed) {
+        const playerOne =  this.game.getPlayers()[0];
+
+        const predicateForNormalMoving =
+            100 < this.position.y + this.radius;
+
+        const predicateForCollisionWithPlayer =
+            playerOne.position.y <= this.position.y + this.radius &&
+            playerOne.position.x <= this.position.x + this.radius &&
+            playerOne.position.x + playerOne.RECWIDTH >= this.position.x;
+
+        const predicateForGoal =
+            playerOne.position.y <= this.position.y + this.radius &&
+            (playerOne.position.x > this.position.x + this.radius ||
+            playerOne.position.x + playerOne.RECWIDTH < this.position.x);
+
+        if (predicateForGoal) {
+            alert('goal');
+            this.render(false, this.getInitialPosition());
+        }
+
+        if (predicateForCollisionWithPlayer) {
+            this.render(true);
+            requestAnimationFrame(this.move);
+        } else if (predicateForNormalMoving) {
             this.render();
             requestAnimationFrame(this.move);
         } else {
