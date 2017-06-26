@@ -6,6 +6,7 @@ import Ball from './Ball';
 export default class Game {
     private canvas: Canvas;
     private players: Player[] = [];
+    private pause: boolean = true;
 
     constructor() {
         this.init();
@@ -15,14 +16,10 @@ export default class Game {
         this.canvas = new Canvas({
             selector: 'root'
         });
-        if( this.players.length < 2 && this.players.length === 0) {
+        if (this.players.length < 2 && this.players.length === 0) {
             this.players.push(new Player(this, true));
         }
         new Ball(this);
-        this.bindEvents();
-    }
-
-    private bindEvents () {
     }
 
     getPlayers() {

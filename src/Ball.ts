@@ -1,4 +1,4 @@
-import { Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 import * as Interface from './interfaces';
 import Game from './Game';
 
@@ -48,12 +48,20 @@ export default class Ball {
         this.context.beginPath();
         this.context.arc(this.position.x, this.position.y, clearingRadius, 0, 2 * Math.PI, true);
         this.context.clip();
-        this.context.clearRect(this.position.x - this.radius, this.position.y - this.radius - 3, this.radius * 2 + 5, this.radius * 2 + 5);
+        this.context.clearRect(
+            this.position.x - this.radius,
+            this.position.y - this.radius - 3,
+            this.radius * 2 + 5, this.radius * 2 + 5
+        );
         this.context.restore();
     }
 
     render(out?: boolean, position?: Interface.Position) {
-        if (out) this.speed = -this.speed;
+
+        if  (out) {
+            this.speed = -this.speed;
+        }
+
         this.clear();
         if (position) {
             this.position = position;
