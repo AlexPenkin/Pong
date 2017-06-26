@@ -12,6 +12,7 @@ export default class Player {
         x: 0,
         y: 0
     };
+    private keysState = {};
 
     constructor (game: Game, isHuman: boolean) {
         this.existingPlayers = game.getPlayers();
@@ -26,9 +27,11 @@ export default class Player {
     private init() {
         const that: Player = this;
         this.context.fillRect(this.position.x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
-        let $key = Observable.fromEvent(document, 'keydown');
-        $key.throttleTime(10).subscribe((e: KeyboardEvent) => {
+        let $keyDown = Observable.fromEvent(document, 'keydown');
+        let $keyUp = Observable.fromEvent(document, 'keyup');
+        $keyDown.throttleTime(10).subscribe((e: KeyboardEvent) => {
             that.timeStamp = performance.now();
+            this.keysState[e.keyCode || e.which] = true;
             switch(e.which || e.keyCode) {
                 case 37: // left
                 that.moveLeft(that.position.x);
@@ -39,6 +42,10 @@ export default class Player {
                 break;
                 default: return;
             }
+        });
+        $keyUp.throttleTime(10).subscribe((e: KeyboardEvent) => {
+            that.timeStamp = performance.now();
+            this.keysState[e.keyCode || e.which] = false;
         });
     }
 
@@ -59,26 +66,30 @@ export default class Player {
     }
 
     moveRight(e: number) {
-        const timeNow = Date.now();
-        if(!e || e - this.timeStamp < 130) {
-            if(!e) e = this.position.x;
-            this.render({
-                x: this.position.x + 1,
-                y: this.position.y
-            })
-            requestAnimationFrame(this.moveRight);
+        if (this.keysState[39]) {
+            const timeNow = Date.now();
+            if(!e || e - this.timeStamp < 130) {
+                if(!e) e = this.position.x;
+                this.render({
+                    x: this.position.x + 1,
+                    y: this.position.y
+                })
+                requestAnimationFrame(this.moveRight);
+            }
         }
     }
 
     moveLeft(e: number) {
-        const timeNow = Date.now();
-        if (!e || e - this.timeStamp < 130) {
-            if (!e) e = this.position.x;
-            this.render({
-                x: this.position.x - 1,
-                y: this.position.y
-            })
-            requestAnimationFrame(this.moveLeft);
+        if (this.keysState[37]) {
+            const timeNow = Date.now();
+            if (!e || e - this.timeStamp < 130) {
+                if (!e) e = this.position.x;
+                this.render({
+                    x: this.position.x - 1,
+                    y: this.position.y
+                })
+                requestAnimationFrame(this.moveLeft);
+            }
         }
     };
 }
