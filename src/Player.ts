@@ -13,7 +13,7 @@ export default class Player {
         y: 0
     };
     private direction: string;
-
+    private keysState = {};
 
     constructor (game: Game, isHuman: boolean) {
         this.existingPlayers = game.getPlayers();
@@ -27,12 +27,13 @@ export default class Player {
     private init() {
         const that: Player = this;
         this.context.fillRect(this.position.x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
-        const $key = Observable.fromEvent(document, 'keydown');
-        $key.throttleTime(10).subscribe((e: KeyboardEvent) => {
+        const $keyDown = Observable.fromEvent(document, 'keydown');
+        const $keyUp = Observable.fromEvent(document, 'keyup');
+        $keyDown.throttleTime(10).subscribe((e: KeyboardEvent) => {
             that.timeStamp = performance.now();
-            switch (e.which || e.keyCode) {
+            this.keysState[e.keyCode || e.which] = true;
+            switch(e.which || e.keyCode) {
             case 37: // left
-                this.direction = 'left';
                 that.move(that.position.x);
                 break;
 
@@ -42,6 +43,10 @@ export default class Player {
                 break;
             default: return;
             }
+        });
+        $keyUp.throttleTime(10).subscribe((e: KeyboardEvent) => {
+            that.timeStamp = performance.now();
+            this.keysState[e.keyCode || e.which] = false;
         });
     }
 
