@@ -1,12 +1,15 @@
 import * as Interface from './interfaces';
 export default class Canvas {
-    canvasSelector: string;
-    canvasSize: Interface.Size;
+    public canvasSelector: string;
+    public canvasSize: Interface.Size;
     private canvas: any;
     private context: any;
     constructor(settings: Interface.CanvasSettings) {
-        this.canvasSelector= settings.selector;
-        this.canvasSize = settings.size;
+        this.canvasSelector = settings.selector;
+        this.canvasSize = settings.size || {
+            height: window.innerHeight - 50,
+            width: window.innerWidth - 50
+        };
         this.init(settings);
     }
 
@@ -15,14 +18,14 @@ export default class Canvas {
             this.canvas.height = size.width;
             this.canvas.width = size.height;
         } else if (size && size.width) {
-            this.canvas.height = window.innerHeight - 50;
+            this.canvas.height = this.canvasSize.height;
             this.canvas.width = size.width;
         } else if (size && size.height){
             this.canvas.height = size.height;
-            this.canvas.width = window.innerWidth - 50;
+            this.canvas.width = this.canvasSize.width;
         } else {
-            this.canvas.height = window.innerHeight - 50;
-            this.canvas.width = window.innerWidth - 50;
+            this.canvas.height = this.canvasSize.height;
+            this.canvas.width = this.canvasSize.width;
         }
     }
 

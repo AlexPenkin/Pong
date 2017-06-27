@@ -11,7 +11,7 @@ export default class Ball {
     private radius: number = 10;
     private ballColor = 'black';
     private game: Game;
-    private speed: number = 10 / this.radius;
+    private speed: number = 0.9 * this.radius;
     public isMoving: boolean = false;
 
     constructor (game: Game) {
@@ -43,31 +43,32 @@ export default class Ball {
     }
 
     clear() {
+        const canvasSize = this.game.getCanvasSize();
         const clearingRadius = this.radius + 3;
         this.context.save();
         this.context.beginPath();
         this.context.arc(this.position.x, this.position.y, clearingRadius, 0, 2 * Math.PI, true);
         this.context.clip();
         this.context.clearRect(
-            this.position.x - this.radius,
-            this.position.y - this.radius - 3,
-            this.radius * 2 + 5, this.radius * 2 + 5
+            0, 0,
+            canvasSize.width, canvasSize.height
         );
         this.context.restore();
     }
 
     render(out?: boolean, position?: Interface.Position) {
-
         if  (out) {
             this.speed = -this.speed;
         }
 
-        this.clear();
+        // this.clear();
+
         if (position) {
             this.position = position;
         } else {
             this.position.y += this.speed;
         }
+
         // this.position.x += 2;
         this.draw(this.position);
     }

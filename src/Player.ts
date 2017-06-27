@@ -15,10 +15,12 @@ export default class Player {
     private speed: number = 0;
     private direction: string;
     private keysState = {};
+    private game: Game;
 
     constructor (game: Game, isHuman: boolean) {
         this.existingPlayers = game.getPlayers();
         this.context = game.getContext();
+        this.game = game;
         this.move = this.move.bind(this);
         this.position.x = window.innerWidth / 2 - this.RECWIDTH / 2;
         this.position.y = window.innerHeight - 100;
@@ -31,7 +33,7 @@ export default class Player {
         const $keyDown = Observable.fromEvent(document, 'keydown');
         const $keyUp = Observable.fromEvent(document, 'keyup');
         this.move(1000);
-        $keyDown.throttleTime(10).subscribe((e: KeyboardEvent) => {
+        $keyDown.subscribe((e: KeyboardEvent) => {
             const speed = 5;
             that.timeStamp = performance.now();
             this.keysState[e.keyCode || e.which] = true;
@@ -48,7 +50,7 @@ export default class Player {
             default: return;
             }
         });
-        $keyUp.throttleTime(10).subscribe((e: KeyboardEvent) => {
+        $keyUp.subscribe((e: KeyboardEvent) => {
             that.timeStamp = performance.now();
             this.speed = 0;
             this.keysState[e.keyCode || e.which] = false;
@@ -58,12 +60,6 @@ export default class Player {
     private render(position: Interface.Position) {
         const player = this;
         function reDraw(x: number) {
-            player.context.clearRect(
-                player.position.x - 1,
-                player.position.y - 1,
-                player.RECWIDTH + 2,
-                player.RECHEIGHT + 2
-            );
             player.context.fillRect(x, position.y, player.RECWIDTH, player.RECHEIGHT);
         }
         if (position.x > this.RECWIDTH / 2 && position.x < window.innerWidth - this.RECWIDTH * 2) {
@@ -77,6 +73,11 @@ export default class Player {
     }
 
     move(e: number) {
+        const canvasSize = this.game.getCanvasSize();
+        this.context.clearRect(
+            0, 0,
+            canvasSize.width, canvasSize.height
+        );
         this.render({
             x: this.position.x - this.speed,
             y: this.position.y
