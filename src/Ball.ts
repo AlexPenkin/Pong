@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import * as Interface from './interfaces';
 import Game from './Game';
+import Player from './Player';
 
 export default class Ball {
     public position: Interface.Position = {
@@ -74,7 +75,9 @@ export default class Ball {
     }
 
     move (e: number) {
-        const playerOne =  this.game.getPlayers()[0];
+        const players: Player[] = this.game.getPlayers();
+        const playerOne: Player =  players[0];
+        const playerTwo: Player = players[1];
 
         const predicateForNormalMoving =
             100 < this.position.y + this.radius;
@@ -97,7 +100,7 @@ export default class Ball {
         if (predicateForCollisionWithPlayer) {
             this.render(true);
             requestAnimationFrame(this.move);
-        } else if (predicateForNormalMoving) {
+        } else if (true) {
             this.render();
             requestAnimationFrame(this.move);
         } else {

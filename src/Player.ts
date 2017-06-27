@@ -3,7 +3,6 @@ import * as Interface from './interfaces';
 import Game from './Game';
 
 export default class Player {
-    private existingPlayers: Player[];
     private context: any;
     private timeStamp: number;
     public RECWIDTH: number = 100;
@@ -18,17 +17,21 @@ export default class Player {
     private game: Game;
 
     constructor (game: Game, isHuman: boolean) {
-        this.existingPlayers = game.getPlayers();
         this.context = game.getContext();
         this.game = game;
         this.move = this.move.bind(this);
         this.position.x = window.innerWidth / 2 - this.RECWIDTH / 2;
-        this.position.y = window.innerHeight - 100;
+        if (isHuman) {
+            this.position.y = window.innerHeight - 100;
+        } else {
+            this.position.y = window.innerHeight - (window.innerHeight - 100);
+        }
         this.init();
     }
 
     private init() {
         const that: Player = this;
+        console.log(this.position);
         this.context.fillRect(this.position.x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
         const $keyDown = Observable.fromEvent(document, 'keydown');
         const $keyUp = Observable.fromEvent(document, 'keyup');
@@ -73,11 +76,6 @@ export default class Player {
     }
 
     move(e: number) {
-        const canvasSize = this.game.getCanvasSize();
-        this.context.clearRect(
-            0, 0,
-            canvasSize.width, canvasSize.height
-        );
         this.render({
             x: this.position.x - this.speed,
             y: this.position.y

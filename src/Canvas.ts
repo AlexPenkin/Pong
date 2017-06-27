@@ -6,6 +6,7 @@ export default class Canvas {
     private context: any;
     constructor(settings: Interface.CanvasSettings) {
         this.canvasSelector = settings.selector;
+        this.clear = this.clear.bind(this);
         this.canvasSize = settings.size || {
             height: window.innerHeight - 50,
             width: window.innerWidth - 50
@@ -34,6 +35,15 @@ export default class Canvas {
         this.canvas = document.getElementById(selector);
         this.context = this.canvas.getContext('2d');
         this.setSize(settings.size);
+        this.clear();
+    }
+
+    clear () {
+        this.context.clearRect(
+            0, 0,
+            this.canvasSize.width, this.canvasSize.height
+        );
+        requestAnimationFrame(this.clear);
     }
 
     getContext() {
