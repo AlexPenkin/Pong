@@ -33,4 +33,11 @@ export default class Game {
     getContext() {
         return this.canvas.getContext();
     }
+
+    getCanvasSize(): Interface.Size {
+        return {
+            height: this.canvas.canvasSize.height,
+            width: this.canvas.canvasSize.width
+        }
+    }
 }
