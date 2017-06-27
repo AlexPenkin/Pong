@@ -6,13 +6,15 @@
 		"no-unused-variable": true,
 		"curly": true,
 		"class-name": true,
-		"semicolon": ["always"],
 		"triple-equals": true,
 		"no-trailing-whitespace": true,
 		"trailing-comma": [
 			false
 		],
 		"ter-indent": [true],
-		"indent": [true, "spaces", 4]
+		"indent": [true, "spaces", 4],
+		"semicolon": [true, "always"],
+		"no-empty": true,
+		"no-consecutive-blank-lines":true
 	}
 }

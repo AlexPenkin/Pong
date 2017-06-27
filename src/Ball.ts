@@ -11,7 +11,7 @@ export default class Ball {
     private radius: number = 10;
     private ballColor = 'black';
     private game: Game;
-    private speed: number = 5;
+    private speed: number = 10 / this.radius;
     public isMoving: boolean = false;
 
     constructor (game: Game) {
@@ -19,19 +19,19 @@ export default class Ball {
         this.context = game.getContext();
         this.move = this.move.bind(this);
         this.position = this.getInitialPosition();
-        this.init()
+        this.init();
     }
 
     init() {
         this.draw(this.position);
-        setTimeout(() => {this.move(0)}, 0);
+        setTimeout(() => {this.move(0);}, 0);
     }
 
     getInitialPosition() {
         return {
             x: window.innerWidth / 2,
             y: window.innerHeight / 2
-        }
+        };
     }
 
     draw(position : Interface.Position) {
