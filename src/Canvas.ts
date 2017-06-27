@@ -5,7 +5,7 @@ export default class Canvas {
     private canvas: any;
     private context: any;
     constructor(settings: Interface.CanvasSettings) {
-        this.canvasSelector= settings.selector;
+        this.canvasSelector = settings.selector;
         this.canvasSize = settings.size;
         this.init(settings);
     }
@@ -17,7 +17,7 @@ export default class Canvas {
         } else if (size && size.width) {
             this.canvas.height = window.innerHeight - 50;
             this.canvas.width = size.width;
-        } else if (size && size.height){
+        } else if (size && size.height) {
             this.canvas.height = size.height;
             this.canvas.width = window.innerWidth - 50;
         } else {
@@ -40,4 +40,4 @@ export default class Canvas {
     getCanvas() {
         return this.canvas;
     }
-};
+}
