@@ -7,7 +7,7 @@ export default class Player {
     private timeStamp: number;
     public RECWIDTH: number = 100;
     public RECHEIGHT: number = 20;
-    private PLAYER_MARGIN = 100;
+    static PLAYER_MARGIN = 100;
     public position: Interface.Position = {
         x: 0,
         y: 0
@@ -23,9 +23,9 @@ export default class Player {
         this.move = this.move.bind(this);
         this.position.x = window.innerWidth / 2 - this.RECWIDTH / 2;
         if (isHuman) {
-            this.position.y = window.innerHeight - this.PLAYER_MARGIN;
+            this.position.y = window.innerHeight - Player.PLAYER_MARGIN;
         } else {
-            this.position.y = window.innerHeight - (window.innerHeight - this.PLAYER_MARGIN);
+            this.position.y = window.innerHeight - (window.innerHeight - Player.PLAYER_MARGIN);
         }
         this.init();
     }

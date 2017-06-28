@@ -59,32 +59,35 @@ export default class Ball {
             return (
                 (this.position.y + this.radius >= curr.position.y &&
                     this.position.y - this.radius <= curr.position.y + curr.RECHEIGHT
+            ) && (
+                this.position.x + this.radius >= curr.position.x &&
+                    this.position.x - this.radius <= curr.position.x + curr.RECWIDTH
             )) || previousPlayer;
         }, false);
         return isCollided;
     }
 
+    goalDetection() {
+        const players: Player[] = this.game.getPlayers();
+        const isCollided = players.reduce((previousPlayer, curr) => {
+            return (
+                (this.position.y + this.radius >= curr.position.y &&
+                    this.position.y - this.radius <= curr.position.y + curr.RECHEIGHT
+                ) && !(
+                    this.position.x + this.radius >= curr.position.x &&
+                    this.position.x - this.radius <= curr.position.x + curr.RECWIDTH
+                )) || previousPlayer;
+        }, false);
+        return isCollided;
+    }
+
     move (e: number) {
-        const players = this.game.getPlayers();
-        const playerOne: Player =  players[0];
-        const playerTwo: Player = players[1];
-
         const predicateForNormalMoving =
-            100 < this.position.y + this.radius;
+            Player.PLAYER_MARGIN < this.position.y + this.radius;
 
-        const predicateForCollisionWithPlayer =
-            playerOne.position.y <= this.position.y + this.radius &&
-            playerOne.position.x <= this.position.x + this.radius &&
-            playerOne.position.x + playerOne.RECWIDTH >= this.position.x;
-
-        const predicateForGoal =
-            playerOne.position.y <= this.position.y + this.radius &&
-            (playerOne.position.x > this.position.x + this.radius ||
-            playerOne.position.x + playerOne.RECWIDTH < this.position.x);
-
-        if (predicateForGoal) {
+        if (this.goalDetection()) {
             alert('goal');
-            this.render(false, this.getInitialPosition());
+            this.render(false);
         }
 
         if (this.playerCollisionDetection()) {
