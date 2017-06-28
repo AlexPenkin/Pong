@@ -22,11 +22,12 @@ export default class Game {
         });
         if (this.players.length < 2 && this.players.length === 0) {
             this.players.push(new Player(this, true));
+            this.players.push(new Player(this, false));
         }
         this.ball = new Ball(this);
     }
 
-    getPlayers() {
+    getPlayers(): Player[] {
         return this.players;
     }
 
@@ -38,6 +39,6 @@ export default class Game {
         return {
             height: this.canvas.canvasSize.height,
             width: this.canvas.canvasSize.width
-        }
+        };
     }
 }

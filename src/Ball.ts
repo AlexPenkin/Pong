@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import * as Interface from './interfaces';
 import Game from './Game';
+import Player from './Player';
 
 export default class Ball {
     public position: Interface.Position = {
@@ -11,7 +12,7 @@ export default class Ball {
     private radius: number = 10;
     private ballColor = 'black';
     private game: Game;
-    private speed: number = 0.9 * this.radius;
+    private speed: number = 0.21 * this.radius;
     public isMoving: boolean = false;
 
     constructor (game: Game) {
@@ -42,59 +43,54 @@ export default class Ball {
         this.context.fill();
     }
 
-    clear() {
-        const canvasSize = this.game.getCanvasSize();
-        const clearingRadius = this.radius + 3;
-        this.context.save();
-        this.context.beginPath();
-        this.context.arc(this.position.x, this.position.y, clearingRadius, 0, 2 * Math.PI, true);
-        this.context.clip();
-        this.context.clearRect(
-            0, 0,
-            canvasSize.width, canvasSize.height
-        );
-        this.context.restore();
-    }
-
-    render(out?: boolean, position?: Interface.Position) {
+    render(out?: boolean) {
         if  (out) {
             this.speed = -this.speed;
         }
 
-        // this.clear();
-
-        if (position) {
-            this.position = position;
-        } else {
-            this.position.y += this.speed;
-        }
-
+        this.position.y += this.speed;
         // this.position.x += 2;
         this.draw(this.position);
     }
 
+    playerCollisionDetection() {
+        const players: Player[] = this.game.getPlayers();
+        const isCollided = players.reduce((previousPlayer, curr) => {
+            return (
+                (this.position.y + this.radius >= curr.position.y &&
+                    this.position.y - this.radius <= curr.position.y + curr.RECHEIGHT
+            ) && (
+                this.position.x + this.radius >= curr.position.x &&
+                    this.position.x - this.radius <= curr.position.x + curr.RECWIDTH
+            )) || previousPlayer;
+        }, false);
+        return isCollided;
+    }
+
+    goalDetection() {
+        const players: Player[] = this.game.getPlayers();
+        const isCollided = players.reduce((previousPlayer, curr) => {
+            return (
+                (this.position.y + this.radius >= curr.position.y &&
+                    this.position.y - this.radius <= curr.position.y + curr.RECHEIGHT
+                ) && !(
+                    this.position.x + this.radius >= curr.position.x &&
+                    this.position.x - this.radius <= curr.position.x + curr.RECWIDTH
+                )) || previousPlayer;
+        }, false);
+        return isCollided;
+    }
+
     move (e: number) {
-        const playerOne =  this.game.getPlayers()[0];
-
         const predicateForNormalMoving =
-            100 < this.position.y + this.radius;
+            Player.PLAYER_MARGIN < this.position.y + this.radius;
 
-        const predicateForCollisionWithPlayer =
-            playerOne.position.y <= this.position.y + this.radius &&
-            playerOne.position.x <= this.position.x + this.radius &&
-            playerOne.position.x + playerOne.RECWIDTH >= this.position.x;
-
-        const predicateForGoal =
-            playerOne.position.y <= this.position.y + this.radius &&
-            (playerOne.position.x > this.position.x + this.radius ||
-            playerOne.position.x + playerOne.RECWIDTH < this.position.x);
-
-        if (predicateForGoal) {
+        if (this.goalDetection()) {
             alert('goal');
-            this.render(false, this.getInitialPosition());
+            this.render(false);
         }
 
-        if (predicateForCollisionWithPlayer) {
+        if (this.playerCollisionDetection()) {
             this.render(true);
             requestAnimationFrame(this.move);
         } else if (predicateForNormalMoving) {
