@@ -21,8 +21,8 @@ export default class Game {
             selector: 'root'
         });
         if (this.players.length < 2 && this.players.length === 0) {
-            this.players.push(new Player(this, false));
             this.players.push(new Player(this, true));
+            this.players.push(new Player(this, false));
         }
         this.ball = new Ball(this);
     }

@@ -7,6 +7,7 @@ export default class Player {
     private timeStamp: number;
     public RECWIDTH: number = 100;
     public RECHEIGHT: number = 20;
+    private PLAYER_MARGIN = 100;
     public position: Interface.Position = {
         x: 0,
         y: 0
@@ -22,9 +23,9 @@ export default class Player {
         this.move = this.move.bind(this);
         this.position.x = window.innerWidth / 2 - this.RECWIDTH / 2;
         if (isHuman) {
-            this.position.y = window.innerHeight - 100;
+            this.position.y = window.innerHeight - this.PLAYER_MARGIN;
         } else {
-            this.position.y = window.innerHeight - (window.innerHeight - 100);
+            this.position.y = window.innerHeight - (window.innerHeight - this.PLAYER_MARGIN);
         }
         this.init();
     }
@@ -60,18 +61,19 @@ export default class Player {
         });
     }
 
+    reDraw(x: number) {
+        this.context.fillRect(
+            x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
+    }
+
     private render(position: Interface.Position) {
-        const player = this;
-        function reDraw(x: number) {
-            player.context.fillRect(x, position.y, player.RECWIDTH, player.RECHEIGHT);
-        }
         if (position.x > this.RECWIDTH / 2 && position.x < window.innerWidth - this.RECWIDTH * 2) {
-            reDraw(position.x);
+            this.reDraw(position.x);
             this.position = position;
         } else if (position.x < this.RECWIDTH / 2) {
-            reDraw(this.RECWIDTH / 2);
+            this.reDraw(this.RECWIDTH / 2);
         } else if (position.x > window.innerWidth - this.RECWIDTH * 2) {
-            reDraw(window.innerWidth - this.RECWIDTH * 2);
+            this.reDraw(window.innerWidth - this.RECWIDTH * 2);
         }
     }
 

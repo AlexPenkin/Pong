@@ -12,7 +12,7 @@ export default class Ball {
     private radius: number = 10;
     private ballColor = 'black';
     private game: Game;
-    private speed: number = 0.9 * this.radius;
+    private speed: number = 0.21 * this.radius;
     public isMoving: boolean = false;
 
     constructor (game: Game) {
@@ -43,39 +43,29 @@ export default class Ball {
         this.context.fill();
     }
 
-    clear() {
-        const canvasSize = this.game.getCanvasSize();
-        const clearingRadius = this.radius + 3;
-        this.context.save();
-        this.context.beginPath();
-        this.context.arc(this.position.x, this.position.y, clearingRadius, 0, 2 * Math.PI, true);
-        this.context.clip();
-        this.context.clearRect(
-            0, 0,
-            canvasSize.width, canvasSize.height
-        );
-        this.context.restore();
-    }
-
-    render(out?: boolean, position?: Interface.Position) {
+    render(out?: boolean) {
         if  (out) {
             this.speed = -this.speed;
         }
 
-        // this.clear();
-
-        if (position) {
-            this.position = position;
-        } else {
-            this.position.y += this.speed;
-        }
-
+        this.position.y += this.speed;
         // this.position.x += 2;
         this.draw(this.position);
     }
 
-    move (e: number) {
+    playerCollisionDetection() {
         const players: Player[] = this.game.getPlayers();
+        const isCollided = players.reduce((previousPlayer, curr) => {
+            return (
+                (this.position.y + this.radius >= curr.position.y &&
+                    this.position.y - this.radius <= curr.position.y + curr.RECHEIGHT
+            )) || previousPlayer;
+        }, false);
+        return isCollided;
+    }
+
+    move (e: number) {
+        const players = this.game.getPlayers();
         const playerOne: Player =  players[0];
         const playerTwo: Player = players[1];
 
@@ -97,10 +87,10 @@ export default class Ball {
             this.render(false, this.getInitialPosition());
         }
 
-        if (predicateForCollisionWithPlayer) {
+        if (this.playerCollisionDetection()) {
             this.render(true);
             requestAnimationFrame(this.move);
-        } else if (true) {
+        } else if (predicateForNormalMoving) {
             this.render();
             requestAnimationFrame(this.move);
         } else {
