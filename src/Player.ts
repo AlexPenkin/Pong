@@ -16,6 +16,7 @@ export default class Player {
     private direction: string;
     private keysState = {};
     private game: Game;
+    public traction: number = 1;
 
     constructor (game: Game, isHuman: boolean) {
         this.context = game.getContext();

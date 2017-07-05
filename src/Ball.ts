@@ -14,12 +14,15 @@ export default class Ball {
     private game: Game;
     private speed: number = 10;
     public isMoving: boolean = false;
+    public traction: number = 1;
+    public players: Player[];
 
     constructor (game: Game) {
         this.game = game;
         this.context = game.getContext();
         this.move = this.move.bind(this);
         this.position = this.getInitialPosition();
+        this.players = this.game.getPlayers();
         this.init();
     }
 
@@ -55,8 +58,7 @@ export default class Ball {
     }
 
     playerCollisionDetection() {
-        const players: Player[] = this.game.getPlayers();
-        const isCollided = players.reduce((previousPlayer, curr) => {
+        const isCollided = this.players.reduce((previousPlayer, curr) => {
             return (
                 (this.position.y + this.radius >= curr.position.y &&
                     this.position.y - this.radius <= curr.position.y + curr.RECHEIGHT
@@ -68,9 +70,13 @@ export default class Ball {
         return isCollided;
     }
 
+    sideBorderDetection() {
+        const sideCollided = this.position.x - this.radius / 2 < 0 ||
+            this.position.x + this.radius / 2 > this.game.getCanvasSize().width;
+    }
+
     goalDetection() {
-        const players: Player[] = this.game.getPlayers();
-        const isCollided = players.reduce((previousPlayer, curr) => {
+        const isCollided = this.players.reduce((previousPlayer, curr) => {
             return (
                 (this.position.y + this.radius >= curr.position.y &&
                     this.position.y - this.radius <= curr.position.y + curr.RECHEIGHT
@@ -89,6 +95,10 @@ export default class Ball {
         if (this.goalDetection()) {
             alert('goal');
             this.render(false);
+        }
+
+        if (this.sideBorderDetection()) {
+            this.position.x = -this.position.x;
         }
 
         if (this.playerCollisionDetection()) {
