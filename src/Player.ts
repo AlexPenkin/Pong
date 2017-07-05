@@ -3,37 +3,37 @@ import * as Interface from './interfaces';
 import Game from './Game';
 
 export default class Player {
+    private existingPlayers: Player[];
     private context: any;
     private timeStamp: number;
     public RECWIDTH: number = 100;
     public RECHEIGHT: number = 20;
-    static PLAYER_MARGIN = 100;
     public position: Interface.Position = {
         x: 0,
         y: 0
     };
+    static PLAYER_MARGIN: number = 100;
     private speed: number = 0;
     private direction: string;
-    private keysState = {};
     private game: Game;
+<<<<<<< HEAD
     public traction: number = 1;
+=======
+    private keysState: {[key: string]: boolean} = {};
+>>>>>>> b10fece46e2509672f199383a82ba8291e4a166f
 
     constructor (game: Game, isHuman: boolean) {
+        this.existingPlayers = game.getPlayers();
         this.context = game.getContext();
         this.game = game;
         this.move = this.move.bind(this);
         this.position.x = window.innerWidth / 2 - this.RECWIDTH / 2;
-        if (isHuman) {
-            this.position.y = window.innerHeight - Player.PLAYER_MARGIN;
-        } else {
-            this.position.y = window.innerHeight - (window.innerHeight - Player.PLAYER_MARGIN);
-        }
+        this.position.y = window.innerHeight - 100;
         this.init();
     }
 
     private init() {
         const that: Player = this;
-        console.log(this.position);
         this.context.fillRect(this.position.x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
         const $keyDown = Observable.fromEvent(document, 'keydown');
         const $keyUp = Observable.fromEvent(document, 'keyup');
@@ -47,7 +47,6 @@ export default class Player {
                 this.direction = 'left';
                 this.speed = speed;
                 break;
-
             case 39: // right
                 this.direction = 'right';
                 this.speed = -speed;
@@ -62,23 +61,27 @@ export default class Player {
         });
     }
 
-    reDraw(x: number) {
-        this.context.fillRect(
-            x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
-    }
-
     private render(position: Interface.Position) {
+        const player = this;
+        function reDraw(x: number) {
+            player.context.fillRect(x, position.y, player.RECWIDTH, player.RECHEIGHT);
+        }
         if (position.x > this.RECWIDTH / 2 && position.x < window.innerWidth - this.RECWIDTH * 2) {
-            this.reDraw(position.x);
+            reDraw(position.x);
             this.position = position;
         } else if (position.x < this.RECWIDTH / 2) {
-            this.reDraw(this.RECWIDTH / 2);
+            reDraw(this.RECWIDTH / 2);
         } else if (position.x > window.innerWidth - this.RECWIDTH * 2) {
-            this.reDraw(window.innerWidth - this.RECWIDTH * 2);
+            reDraw(window.innerWidth - this.RECWIDTH * 2);
         }
     }
 
     move(e: number) {
+        const canvasSize = this.game.getCanvasSize();
+        this.context.clearRect(
+            0, 0,
+            canvasSize.width, canvasSize.height
+        );
         this.render({
             x: this.position.x - this.speed,
             y: this.position.y
