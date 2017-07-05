@@ -16,11 +16,8 @@ export default class Player {
     private speed: number = 0;
     private direction: string;
     private game: Game;
-<<<<<<< HEAD
     public traction: number = 1;
-=======
     private keysState: {[key: string]: boolean} = {};
->>>>>>> b10fece46e2509672f199383a82ba8291e4a166f
 
     constructor (game: Game, isHuman: boolean) {
         this.existingPlayers = game.getPlayers();

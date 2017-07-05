@@ -66,7 +66,7 @@ export default class Ball {
                 this.position.x + this.radius >= curr.position.x &&
                     this.position.x - this.radius <= curr.position.x + curr.RECWIDTH
             )) || previousPlayer;
-        }, false);
+        },                                     false);
         return isCollided;
     }
 
@@ -84,7 +84,7 @@ export default class Ball {
                     this.position.x + this.radius >= curr.position.x &&
                     this.position.x - this.radius <= curr.position.x + curr.RECWIDTH
                 )) || previousPlayer;
-        }, false);
+        },                                     false);
         return isCollided;
     }
 
