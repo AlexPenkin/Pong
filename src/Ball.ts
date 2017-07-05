@@ -12,14 +12,17 @@ export default class Ball {
     private radius: number = 10;
     private ballColor = 'black';
     private game: Game;
-    private speed: number = 10;
+    private speed: any = { x: 0, y: 5 };
     public isMoving: boolean = false;
+    public traction: number = 1;
+    public players: Player[];
 
     constructor (game: Game) {
         this.game = game;
         this.context = game.getContext();
         this.move = this.move.bind(this);
         this.position = this.getInitialPosition();
+        this.players = this.game.getPlayers();
         this.init();
     }
 
@@ -43,20 +46,14 @@ export default class Ball {
         this.context.fill();
     }
 
-    render(out?: boolean) {
-        if  (out) {
-            this.speed = -this.speed;
-        }
-
-        this.position.y += this.speed;
-
-        // this.position.x += 2;
+    render() {
+        this.position.y += this.speed.y;
+        this.position.x += this.speed.x;
         this.draw(this.position);
     }
 
     playerCollisionDetection() {
-        const players: Player[] = this.game.getPlayers();
-        const isCollided = players.reduce((previousPlayer, curr) => {
+        const isCollided = this.players.reduce((previousPlayer, curr) => {
             return (
                 (this.position.y + this.radius >= curr.position.y &&
                     this.position.y - this.radius <= curr.position.y + curr.RECHEIGHT
@@ -64,13 +61,29 @@ export default class Ball {
                 this.position.x + this.radius >= curr.position.x &&
                     this.position.x - this.radius <= curr.position.x + curr.RECWIDTH
             )) || previousPlayer;
-        }, false);
+        },                                     false);
+        if (isCollided) {
+            if (this.speed.x <= 3 && this.speed.x >= -3) {
+                if (this.players[0].direction === 'left') {
+                    this.speed.x += 3;
+                } else if (this.players[0].direction === 'right') {
+                    this.speed.x += -3;
+                } else {
+                    this.speed.x += 0;
+                }
+            }
+        }
         return isCollided;
     }
 
+    sideBorderDetection() {
+        const sideCollided = this.position.x - this.radius / 2 < 0 ||
+            this.position.x + this.radius / 2 > this.game.getCanvasSize().width;
+        return sideCollided;
+    }
+
     goalDetection() {
-        const players: Player[] = this.game.getPlayers();
-        const isCollided = players.reduce((previousPlayer, curr) => {
+        const isCollided = this.players.reduce((previousPlayer, curr) => {
             return (
                 (this.position.y + this.radius >= curr.position.y &&
                     this.position.y - this.radius <= curr.position.y + curr.RECHEIGHT
@@ -78,7 +91,7 @@ export default class Ball {
                     this.position.x + this.radius >= curr.position.x &&
                     this.position.x - this.radius <= curr.position.x + curr.RECWIDTH
                 )) || previousPlayer;
-        }, false);
+        },                                     false);
         return isCollided;
     }
 
@@ -88,17 +101,23 @@ export default class Ball {
 
         if (this.goalDetection()) {
             alert('goal');
-            this.render(false);
+            this.render();
+        }
+
+        if (this.sideBorderDetection()) {
+            this.speed.x = -this.speed.x;
         }
 
         if (this.playerCollisionDetection()) {
-            this.render(true);
+            this.speed.y = -this.speed.y;
+            this.render();
             requestAnimationFrame(this.move);
         } else if (predicateForNormalMoving) {
             this.render();
             requestAnimationFrame(this.move);
         } else {
-            this.render(true);
+            this.speed.y = -this.speed.y;
+            this.render();
             requestAnimationFrame(this.move);
         }
     }
