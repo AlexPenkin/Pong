@@ -15,6 +15,9 @@
 		"indent": [true, "spaces", 4],
 		"semicolon": [true, "always"],
 		"no-empty": true,
-		"no-consecutive-blank-lines":true
+		"no-consecutive-blank-lines":true,
+		"no-console": [
+			true
+		]
 	}
 }

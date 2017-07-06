@@ -21,7 +21,7 @@ export default class Ball {
         this.game = game;
         this.context = game.getContext();
         this.move = this.move.bind(this);
-        this.position = this.getInitialPosition();
+        this.setInitialPosition();
         this.players = this.game.getPlayers();
         this.init();
     }
@@ -36,6 +36,11 @@ export default class Ball {
             x: window.innerWidth / 2,
             y: window.innerHeight / 2
         };
+    }
+
+    setInitialPosition() {
+        this.position = this.getInitialPosition();
+        this.speed.x = 0;
     }
 
     draw(position : Interface.Position) {
@@ -63,22 +68,28 @@ export default class Ball {
             )) || previousPlayer;
         },                                     false);
         if (isCollided) {
-            if (this.speed.x <= 3 && this.speed.x >= -3) {
+            const acceleration = 6;
+            if (this.speed.x < acceleration && this.speed.x > -acceleration) {
                 if (this.players[0].direction === 'left') {
-                    this.speed.x += 3;
+                    this.speed.x += acceleration;
                 } else if (this.players[0].direction === 'right') {
-                    this.speed.x += -3;
+                    this.speed.x += -acceleration;
                 } else {
                     this.speed.x += 0;
                 }
+            } else if (this.players[0].direction === 'right' && this.speed.x >= acceleration) {
+                this.speed.x = 0;
+            } else if (this.players[0].direction === 'left' && this.speed.x <= -acceleration) {
+                this.speed.x = 0;
             }
         }
         return isCollided;
     }
 
     sideBorderDetection() {
-        const sideCollided = this.position.x - this.radius / 2 < 0 ||
-            this.position.x + this.radius / 2 > this.game.getCanvasSize().width;
+        const sideCollided = this.position.x - this.radius / 2 < this.players[0].RECWIDTH / 2 ||
+            this.position.x + this.radius / 2 >
+            this.game.getCanvasSize().width  - this.players[0].RECWIDTH / 2;
         return sideCollided;
     }
 
@@ -102,6 +113,7 @@ export default class Ball {
         if (this.goalDetection()) {
             alert('goal');
             this.render();
+            this.game.allMoveToInitialPosition();
         }
 
         if (this.sideBorderDetection()) {
