@@ -31,12 +31,8 @@ export default class Canvas {
     }
 
     init(settings: Interface.CanvasSettings) {
-        const body: HTMLElement = document.getElementsByTagName('body')[0];
-        const canvasEl: HTMLElement = document.createElement('canvas');
-        canvasEl.id = 'root';
-        canvasEl.classList.add('root');
-        body.appendChild(canvasEl);
-        this.canvas = canvasEl;
+        const selector = settings.selector || 'root';
+        this.canvas = document.getElementById(selector);
         this.context = this.canvas.getContext('2d');
         this.setSize(settings.size);
         this.clear();
