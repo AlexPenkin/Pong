@@ -35,6 +35,13 @@ export default class Game {
         return this.canvas.getContext();
     }
 
+    allMoveToInitialPosition() {
+        this.players.forEach((player) => {
+            player.setInitialPosition();
+        });
+        this.ball.setInitialPosition();
+    }
+
     getCanvasSize(): Interface.Size {
         return {
             height: this.canvas.canvasSize.height,
