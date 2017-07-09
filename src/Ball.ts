@@ -9,10 +9,10 @@ export default class Ball {
         y: 0
     };
     private context: any;
-    private radius: number = 10;
+    public radius: number = 10;
     private ballColor = 'black';
     private game: Game;
-    private speed: any = { x: 0, y: 5 };
+    private speed: any = { x: 0, y: 10 };
     public isMoving: boolean = false;
     public traction: number = 1;
     public players: Player[];
@@ -55,6 +55,13 @@ export default class Ball {
         this.position.y += this.speed.y;
         this.position.x += this.speed.x;
         this.draw(this.position);
+    }
+
+    getPosition(): Interface.Position {
+        return {
+            x: this.position.x,
+            y: this.position.y
+        };
     }
 
     playerCollisionDetection() {

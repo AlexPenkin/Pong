@@ -30,36 +30,39 @@ export default class Player {
         this.init();
     }
 
-    private init() {
+    private init(): void {
         this.context.fillRect(this.position.x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
-        const $keyDown = Observable.fromEvent(document, 'keydown');
-        const $keyUp = Observable.fromEvent(document, 'keyup');
         this.move(1000);
-        $keyDown.subscribe((e: KeyboardEvent) => {
-            const SPEED = 10;
-            this.timeStamp = performance.now();
-            this.keysState[e.keyCode || e.which] = true;
-            switch (e.which || e.keyCode) {
-            case 37: // left arrow key
-                this.direction = 'left';
-                this.speed = SPEED;
-                break;
-            case 39: // right arrow key
-                this.direction = 'right';
-                this.speed = -SPEED;
-                break;
-            default: return;
-            }
-        });
-        $keyUp.subscribe((e: KeyboardEvent) => {
-            this.timeStamp = performance.now();
-            this.speed = 0;
-            this.keysState[e.keyCode || e.which] = false;
-            this.direction = 'none';
-        });
+        if (this.isHuman) {
+            const $keyDown = Observable.fromEvent(document, 'keydown');
+            const $keyUp = Observable.fromEvent(document, 'keyup');
+            this.move(1000);
+            $keyDown.subscribe((e: KeyboardEvent) => {
+                const SPEED = 10;
+                this.timeStamp = performance.now();
+                this.keysState[e.keyCode || e.which] = true;
+                switch (e.which || e.keyCode) {
+                case 37: // left arrow key
+                    this.direction = 'left';
+                    this.speed = SPEED;
+                    break;
+                case 39: // right arrow key
+                    this.direction = 'right';
+                    this.speed = -SPEED;
+                    break;
+                default: return;
+                }
+            });
+            $keyUp.subscribe((e: KeyboardEvent) => {
+                this.timeStamp = performance.now();
+                this.speed = 0;
+                this.keysState[e.keyCode || e.which] = false;
+                this.direction = 'none';
+            });
+        }
     }
 
-    setInitialPosition() {
+    setInitialPosition(): void {
         this.position.x = window.innerWidth / 2 - this.RECWIDTH / 2;
         if (this.isHuman) {
             this.position.y = window.innerHeight - Player.PLAYER_MARGIN;
@@ -68,9 +71,10 @@ export default class Player {
         }
     }
 
-    private render(position: Interface.Position) {
+    private render(position: Interface.Position): void {
         // tslint:disable-next-line:no-var-self
         const player = this;
+        this.ai();
         function reDraw(x: number) {
             player.context.fillRect(x, position.y, player.RECWIDTH, player.RECHEIGHT);
         }
@@ -86,7 +90,30 @@ export default class Player {
         }
     }
 
-    move(e: number) {
+    ai(): string {
+        if (!this.isHuman && this.game.ball) {
+            const ballPosition = this.game.ball.getPosition().x + this.game.ball.radius;
+            const posistionDiffirence = this.position.x + this.RECWIDTH / 2 - ballPosition;
+            // console.log(this.position.x + this.RECWIDTH / 2);
+            // console.log(ballPosition);
+            if (posistionDiffirence > this.game.ball.radius ||
+                posistionDiffirence < -this.game.ball.radius
+            ) {
+                if (this.position.x + this.RECWIDTH / 2 < ballPosition) {
+                    this.speed = -10;
+                } else {
+                    this.speed = 10;
+                }
+                return 'AI done his work';
+            } else {
+                this.speed = 0;
+            }
+        } else {
+            return 'Is not human';
+        }
+    }
+
+    move(e: number): void {
         this.render({
             x: this.position.x - this.speed,
             y: this.position.y

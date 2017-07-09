@@ -7,9 +7,10 @@ import Ball from './Ball';
 export default class Game {
     private canvas: Canvas;
     private players: Player[] = [];
-    private ball: Ball;
+    public ball: Ball;
     private pause: boolean = true;
     private $pauseKey: Observable<[KeyboardEvent]>;
+    public difficulty: number = 1;
 
     constructor() {
         this.init();
