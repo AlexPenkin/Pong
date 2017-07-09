@@ -64,6 +64,7 @@ export default class Player {
 
     setInitialPosition(): void {
         this.position.x = window.innerWidth / 2 - this.RECWIDTH / 2;
+        this.speed = 0;
         if (this.isHuman) {
             this.position.y = window.innerHeight - Player.PLAYER_MARGIN;
         } else {
