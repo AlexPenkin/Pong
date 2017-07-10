@@ -72,26 +72,31 @@ export default class Player {
         }
     }
 
+    reDraw(x: number) {
+        if (!this.isHuman) {
+            console.log(x);
+        }
+        this.context.fillRect(x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
+    }
+
     private render(position: Interface.Position): void {
         // tslint:disable-next-line:no-var-self
         const player = this;
         this.ai();
-        function reDraw(x: number) {
-            player.context.fillRect(x, position.y, player.RECWIDTH, player.RECHEIGHT);
-        }
         if (position.x > this.RECWIDTH / 2 && position.x < window.innerWidth - this.RECWIDTH * 2) {
-            reDraw(position.x);
+            this.reDraw(position.x);
             this.position = position;
         } else if (position.x < this.RECWIDTH / 2) {
-            reDraw(this.RECWIDTH / 2);
+            this.reDraw(this.RECWIDTH / 2);
         } else if (position.x > window.innerWidth - this.RECWIDTH * 2) {
-            reDraw(window.innerWidth - this.RECWIDTH * 2);
+            this.reDraw(window.innerWidth - this.RECWIDTH * 2);
         } else {
-            reDraw(this.position.x);
+            this.reDraw(this.position.x);
         }
     }
 
     ai(): string {
+        const SPEED = 10;
         if (!this.isHuman && this.game.ball) {
             const ballPosition = this.game.ball.getPosition().x + this.game.ball.radius;
             const posistionDiffirence = this.position.x + this.RECWIDTH / 2 - ballPosition;
@@ -101,9 +106,9 @@ export default class Player {
                 posistionDiffirence < -this.game.ball.radius
             ) {
                 if (this.position.x + this.RECWIDTH / 2 < ballPosition) {
-                    this.speed = -10;
+                    this.speed = -SPEED;
                 } else {
-                    this.speed = 10;
+                    this.speed = SPEED;
                 }
                 return 'AI done his work';
             } else {
@@ -115,10 +120,29 @@ export default class Player {
     }
 
     move(e: number): void {
-        this.render({
-            x: this.position.x - this.speed,
-            y: this.position.y
-        });
+        if (!this.isHuman) {
+            // console.log(this.position);
+        }
+        if (this.isHuman) {
+            this.render({
+                x: this.position.x - this.speed,
+                y: this.position.y
+            });
+        } else {
+            const speed = this.position.x - this.speed;
+            while (this.position.x !== speed) {
+                if (this.speed > 0) {
+                    this.position.x -= 1;
+                } else if (this.speed < 0) {
+                    this.position.x += 1;
+                }
+                this.reDraw(this.position.x);
+            }
+            this.render({
+                x: this.position.x,
+                y: this.position.y
+            });
+        }
         requestAnimationFrame(this.move);
     }
 }
