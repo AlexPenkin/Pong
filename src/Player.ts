@@ -23,23 +23,24 @@ export default class Player {
     constructor (game: Game, isHuman: boolean) {
         this.existingPlayers = game.getPlayers();
         this.context = game.getContext();
+        this.render = this.render.bind(this);
         this.game = game;
         this.isHuman = isHuman;
         this.move = this.move.bind(this);
         this.setInitialPosition();
+        this.timeStamp = performance.now();
         this.init();
     }
 
     private init(): void {
         this.context.fillRect(this.position.x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
-        this.move(1000);
+        this.render();
+        this.move();
         if (this.isHuman) {
             const $keyDown = Observable.fromEvent(document, 'keydown');
             const $keyUp = Observable.fromEvent(document, 'keyup');
-            this.move(1000);
             $keyDown.subscribe((e: KeyboardEvent) => {
-                const SPEED = 10;
-                this.timeStamp = performance.now();
+                const SPEED = 8;
                 this.keysState[e.keyCode || e.which] = true;
                 switch (e.which || e.keyCode) {
                 case 37: // left arrow key
@@ -54,7 +55,6 @@ export default class Player {
                 }
             });
             $keyUp.subscribe((e: KeyboardEvent) => {
-                this.timeStamp = performance.now();
                 this.speed = 0;
                 this.keysState[e.keyCode || e.which] = false;
                 this.direction = 'none';
@@ -73,44 +73,38 @@ export default class Player {
     }
 
     reDraw(x: number) {
-        if (!this.isHuman) {
-            console.log(x);
-        }
         this.context.fillRect(x, this.position.y, this.RECWIDTH, this.RECHEIGHT);
     }
 
-    private render(position: Interface.Position): void {
-        // tslint:disable-next-line:no-var-self
-        const player = this;
+    private render(e?: number): void {
         this.ai();
-        if (position.x > this.RECWIDTH / 2 && position.x < window.innerWidth - this.RECWIDTH * 2) {
-            this.reDraw(position.x);
-            this.position = position;
-        } else if (position.x < this.RECWIDTH / 2) {
+        if (this.position.x > this.RECWIDTH / 2 &&
+            this.position.x < window.innerWidth - this.RECWIDTH * 2) {
+            this.reDraw(this.position.x);
+        } else if (this.position.x < this.RECWIDTH / 2) {
             this.reDraw(this.RECWIDTH / 2);
-        } else if (position.x > window.innerWidth - this.RECWIDTH * 2) {
+        } else if (this.position.x > window.innerWidth - this.RECWIDTH * 2) {
             this.reDraw(window.innerWidth - this.RECWIDTH * 2);
         } else {
             this.reDraw(this.position.x);
         }
+        requestAnimationFrame(this.render);
     }
 
     ai(): string {
-        const SPEED = 10;
         if (!this.isHuman && this.game.ball) {
             const ballPosition = this.game.ball.getPosition().x + this.game.ball.radius;
             const posistionDiffirence = this.position.x + this.RECWIDTH / 2 - ballPosition;
-            // console.log(this.position.x + this.RECWIDTH / 2);
-            // console.log(ballPosition);
             if (posistionDiffirence > this.game.ball.radius ||
                 posistionDiffirence < -this.game.ball.radius
             ) {
-                if (this.position.x + this.RECWIDTH / 2 < ballPosition) {
-                    this.speed = -SPEED;
+                if (this.position.x + this.RECWIDTH / 2 <= ballPosition) {
+                    this.speed = -1;
+                    this.move(1);
                 } else {
-                    this.speed = SPEED;
+                    this.speed = 1;
                 }
-                return 'AI done his work';
+                this.move(1);
             } else {
                 this.speed = 0;
             }
@@ -119,29 +113,15 @@ export default class Player {
         }
     }
 
-    move(e: number): void {
-        if (!this.isHuman) {
-            // console.log(this.position);
-        }
-        if (this.isHuman) {
-            this.render({
-                x: this.position.x - this.speed,
-                y: this.position.y
-            });
+    move(e?: number): void {
+        if (this.isHuman && this.speed) {
+            this.position.x -= this.speed;
         } else {
-            const speed = this.position.x - this.speed;
-            while (this.position.x !== speed) {
-                if (this.speed > 0) {
-                    this.position.x -= 1;
-                } else if (this.speed < 0) {
-                    this.position.x += 1;
-                }
-                this.reDraw(this.position.x);
+            const diff = this.position.x - this.speed;
+            if (diff !== this.position.x) {
+                this.position.x -= this.speed;
+                this.render();
             }
-            this.render({
-                x: this.position.x,
-                y: this.position.y
-            });
         }
         requestAnimationFrame(this.move);
     }

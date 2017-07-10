@@ -12,7 +12,7 @@ export default class Ball {
     public radius: number = 10;
     private ballColor = 'black';
     private game: Game;
-    private speed: any = { x: 0, y: 10 };
+    private speed: any = { x: 5, y: 10 };
     public isMoving: boolean = false;
     public traction: number = 1;
     public players: Player[];
