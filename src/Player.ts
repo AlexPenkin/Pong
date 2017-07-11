@@ -9,13 +9,15 @@ export default class Player {
     private timeStamp: number;
     public RECWIDTH: number = 100;
     public RECHEIGHT: number = 20;
+    static PLAYER_MARGIN = 100;
     public position: Interface.Position = {
         x: 0,
         y: 0
     };
     static PLAYER_MARGIN: number = 50;
     private speed: number = 0;
-    public direction: string;
+    private direction: string;
+    private keysState = {};
     private game: Game;
     public traction: number = 1;
     public isHuman: boolean;
@@ -23,14 +25,18 @@ export default class Player {
     private diff: number;
 
     constructor (game: Game, isHuman: boolean) {
-        this.existingPlayers = game.getPlayers();
         this.context = game.getContext();
         this.render = this.render.bind(this);
         this.game = game;
         this.isHuman = isHuman;
         this.name = (isHuman) ? 'Player1' : 'AI';
         this.move = this.move.bind(this);
-        this.setInitialPosition();
+        this.position.x = window.innerWidth / 2 - this.RECWIDTH / 2;
+        if (isHuman) {
+            this.position.y = window.innerHeight - Player.PLAYER_MARGIN;
+        } else {
+            this.position.y = window.innerHeight - (window.innerHeight - Player.PLAYER_MARGIN);
+        }
         this.init();
     }
 

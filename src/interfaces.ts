@@ -1,14 +1,14 @@
 export interface Size {
-    height: number;
-    width: number;
+    height: number,
+    width: number
 }
 
 export interface CanvasSettings {
-    selector: string;
-    size?: Size;
+    selector: string,
+    size?: Size,
 }
 
 export interface Position {
-    x: number;
-    y: number;
+    x: number,
+    y: number
 }
