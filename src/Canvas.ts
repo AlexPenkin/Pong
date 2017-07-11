@@ -4,12 +4,13 @@ export default class Canvas {
     public canvasSize: Interface.Size;
     private canvas: any;
     private context: any;
+    public margin: number = 25;
     constructor(settings: Interface.CanvasSettings) {
         this.canvasSelector = settings.selector;
         this.clear = this.clear.bind(this);
         this.canvasSize = settings.size || {
             height: window.innerHeight - 50,
-            width: window.innerWidth - 50
+            width: window.innerWidth - 325
         };
         this.init(settings);
     }
@@ -36,6 +37,11 @@ export default class Canvas {
         canvasEl.id = 'root';
         canvasEl.classList.add('root');
         body.appendChild(canvasEl);
+        canvasEl.style.border = '1px solid black';
+        body.style.textAlign = 'left';
+        body.style.marginTop = `${this.margin}px`;
+        body.style.marginLeft = `${this.margin}px`;
+        body.style.marginRight = `${this.margin}px`;
         this.canvas = canvasEl;
         this.context = this.canvas.getContext('2d');
         this.setSize(settings.size);
@@ -48,6 +54,7 @@ export default class Canvas {
             this.canvasSize.width, this.canvasSize.height
         );
         requestAnimationFrame(this.clear);
+        return;
     }
 
     getContext() {

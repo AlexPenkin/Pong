@@ -32,8 +32,9 @@ export default class Ball {
     }
 
     getInitialPosition() {
+        const canvasSize = this.game.getCanvasSize();
         return {
-            x: window.innerWidth / 2,
+            x: canvasSize.width / 2,
             y: window.innerHeight / 2
         };
     }
@@ -101,14 +102,29 @@ export default class Ball {
     }
 
     goalDetection() {
-        const isCollided = this.players.reduce((previousPlayer, curr) => {
-            return (
+        const isCollided = this.players.reduce((prev, curr) => {
+            const predicate = (
                 (this.position.y + this.radius >= curr.position.y &&
                     this.position.y - this.radius <= curr.position.y + curr.RECHEIGHT
                 ) && !(
                     this.position.x + this.radius >= curr.position.x &&
                     this.position.x - this.radius <= curr.position.x + curr.RECWIDTH
-                )) || previousPlayer;
+            ));
+            if (predicate === true) {
+                if (!curr.isHuman) {
+
+                    this.game.setScore(
+                        this.game.playerScore,
+                        this.game.getScore(this.game.playerScore) + 1
+                    );
+                } else {
+                    this.game.setScore(
+                        this.game.compScore,
+                        this.game.getScore(this.game.compScore) + 1
+                    );
+                }
+            }
+            return predicate || prev;
         },                                     false);
         return isCollided;
     }
@@ -118,7 +134,6 @@ export default class Ball {
             Player.PLAYER_MARGIN < this.position.y + this.radius;
 
         if (this.goalDetection()) {
-            alert('goal');
             this.render();
             this.game.allMoveToInitialPosition();
         }
