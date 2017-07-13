@@ -95,9 +95,9 @@ export default class Ball {
     }
 
     sideBorderDetection() {
-        const sideCollided = this.position.x - this.radius / 2 < this.players[0].RECWIDTH / 2 ||
+        const sideCollided = this.position.x - this.radius / 2 < this.radius ||
             this.position.x + this.radius / 2 >
-            this.game.getCanvasSize().width  - this.players[0].RECWIDTH / 2;
+            this.game.getCanvasSize().width  - this.radius;
         return sideCollided;
     }
 
@@ -112,7 +112,6 @@ export default class Ball {
             ));
             if (predicate === true) {
                 if (!curr.isHuman) {
-
                     this.game.setScore(
                         this.game.playerScore,
                         this.game.getScore(this.game.playerScore) + 1
