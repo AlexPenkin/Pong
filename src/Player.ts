@@ -20,12 +20,12 @@ export default class Player {
     public traction: number = 1;
     public isHuman: boolean;
     private keysState: boolean;
-    private diff: number;
 
-    constructor (game: Game, isHuman: boolean) {
+    constructor(game: Game, isHuman: boolean) {
         this.existingPlayers = game.getPlayers();
         this.context = game.getContext();
         this.render = this.render.bind(this);
+        this.ai = this.ai.bind(this);
         this.game = game;
         this.isHuman = isHuman;
         this.name = (isHuman) ? 'Player1' : 'AI';
@@ -36,7 +36,6 @@ export default class Player {
 
     private init(): void {
         this.render();
-        this.move();
         if (this.isHuman) {
             const $keyDown = Observable.fromEvent(document, 'keydown');
             const $keyUp = Observable.fromEvent(document, 'keyup');
@@ -80,40 +79,56 @@ export default class Player {
 
     private render(e?: number): void {
         this.ai();
+        const canvasWidth = this.game.getCanvasSize().width;
         if (this.position.x > this.RECWIDTH / 2 &&
-            this.position.x < window.innerWidth - this.RECWIDTH * 2) {
+            this.position.x < canvasWidth - this.RECWIDTH * 2) {
             this.reDraw(this.position.x);
             // detection left out
         } else if (this.position.x < 0) {
             this.reDraw(0);
             // detection right out
-        } else if (this.position.x > window.innerWidth - this.RECWIDTH * 1.5) {
-            this.reDraw(window.innerWidth - this.RECWIDTH * 1.5);
+        } else if (this.position.x > canvasWidth - this.RECWIDTH) {
+            this.reDraw(canvasWidth - this.RECWIDTH);
         } else {
             this.reDraw(this.position.x);
         }
+        this.move();
         requestAnimationFrame(this.render);
+    }
+
+    getBallPosition() {
+        return this.game.ball.getPosition().x;
+    }
+
+    getDiffirenceWithPlayerAndBall() {
+        const ballPosition = this.getBallPosition();
+        const posistionDiffirence = this.position.x + this.RECWIDTH / 2 - ballPosition;
+        return posistionDiffirence;
     }
 
     ai(): string {
         if (!this.isHuman && this.game.ball) {
-            const SPEED = 1;
-            const ballPosition = this.game.ball.getPosition().x + this.game.ball.radius;
-            const posistionDiffirence = this.position.x + this.RECWIDTH / 2 - ballPosition;
+            const range = 10;
+            const speed = -1;
+            const posistionDiffirence = this.getDiffirenceWithPlayerAndBall();
             if (posistionDiffirence > this.game.ball.radius ||
                 posistionDiffirence < -this.game.ball.radius
             ) {
-                if (this.position.x + this.RECWIDTH / 2 <= ballPosition) {
-                    this.speed = -SPEED;
+                if (this.position.x + this.RECWIDTH / 2 <= this.getBallPosition()) {
+                    this.speed = -range;
                 } else {
-                    this.speed = SPEED;
+                    this.speed = range;
                 }
             } else {
                 this.speed = 0;
             }
-            this.diff = this.position.x - this.speed;
-            if (this.speed !== 0) {
-                this.move();
+            if (posistionDiffirence < range) {
+                this.position.x -= speed;
+                requestAnimationFrame(this.ai);
+            }
+            if (posistionDiffirence > range) {
+                this.position.x += speed;
+                requestAnimationFrame(this.ai);
             }
         } else {
             return 'Is not human';
@@ -121,17 +136,8 @@ export default class Player {
     }
 
     move(e?: number): void {
-        if (this.keysState && this.speed) {
+        if (this.isHuman) {
             this.position.x -= this.speed;
-            requestAnimationFrame(this.move);
-        } else {
-            if (this.diff !== this.position.x) {
-                // console.log(this.speed);
-                this.position.x -= this.speed;
-                requestAnimationFrame(this.move);
-            } else {
-                return;
-            }
         }
         return;
     }
